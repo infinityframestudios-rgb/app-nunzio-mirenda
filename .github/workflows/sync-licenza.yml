@@ -1,0 +1,29 @@
+# Copia licenza.json dal branch main al sito pubblicato (gh-pages) ogni volta che Salvo la modifica.
+# Così basta cambiare licenza.json su main (anche dal sito GitHub): le app nuove la leggono dal sito, quelle vecchie da main.
+name: Sincronizza licenza
+on:
+  push:
+    branches: [main]
+    paths: [licenza.json]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: { group: licenza, cancel-in-progress: false }
+jobs:
+  copia:
+    if: github.repository == 'infinityframestudios-rgb/app-nunzio-mirenda'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main, path: m }
+      - uses: actions/checkout@v4
+        with: { ref: gh-pages, path: p }
+      - name: Controlla e copia
+        run: |
+          python3 -c "import json; j=json.load(open('m/licenza.json')); assert isinstance(j, dict)"
+          cp m/licenza.json p/licenza.json
+          cd p
+          if git diff --quiet -- licenza.json && git ls-files --error-unmatch licenza.json >/dev/null 2>&1; then echo "Già uguale"; exit 0; fi
+          git add licenza.json
+          git -c user.name='Infinity Frame Studios' -c user.email='infinityframestudios@users.noreply.github.com' commit -m "licenza.json da main"
+          git push origin gh-pages
