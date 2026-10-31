@@ -1,0 +1,1 @@
+import{l as t,c as o,j as e,r,P as s}from"./preventivo-xkN6aULP.js";const{studio:i,prezzi:n}=t(window.__PREVENTIVO||location.hash);o(document.getElementById("root")).render(e.jsx(r.StrictMode,{children:e.jsx(s,{studio:i,prezzi:n})}));
